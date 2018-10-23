@@ -3,7 +3,7 @@ import math
 def inputParser(input):
     # if there are no parenthesis in the expression then we can just evaluate the entire expression at face value
     if "(" and ")" not in input:
-        calcExpression(input)
+        calc_expression(input)
 
     root = "sqrt"
     # check for sqrt function
@@ -15,7 +15,7 @@ def inputParser(input):
     leftParen = 0
     rightParen = 0
     for i in range(0, len(input)):
-        if not(input[i].isDigit() or isLegalChar(input[i])):
+        if not(input[i].isdigit() or isLegalChar(input[i])):
             return False
 
         if input[i] == "(":
@@ -31,35 +31,36 @@ def inputParser(input):
         return "Illegal usage of parenthesis"
 
     for i in range(0, len(input)):
-        inputRev = reversed(input)
-        currChar = inputRev[i]
 
-        if currChar == "(":
+        if input[i] == "(":
             tempRev = reverse(input[i:])
             j = 0
             while not(tempRev[j]==")"):
                 j += 1
 
-            replaceMe = input[i:len(input)-j-1]
-            withMe = handleParen(input[i:len(input)-j-1])
+            replaceMe = input[i:len(input)-j]
+            withMe = handleParen(input[i:len(input)-j])
             input.replace(replaceMe,withMe)
+
+
 
 def handleParen(exp):
     output = ""
 
     for i in range (1, len(exp)):
         if exp[i] == ")":
-            return calcExpression(output)
+            return calc_expression(output)
         elif exp[i] == "(":
-            output += handleParen(exp[i:])
+            output += handleParen(exp[i+1:])
         else:
             output += exp[i]
 
 
 def isLegalChar(char):
-    legalChars = ".()^*/+-"
+    legalChars = "()^*/+-"
 
     return char in legalChars
+
 
 # this will only be used for locating the sqrt function in an input string
 def find_str(char, str):
@@ -75,14 +76,17 @@ def find_str(char, str):
             index += 1
 
     return -1
-def reverse(str):
+
+
+def reverse(input):
     rev = ''
-    for i in range(len(str),0,-1):
-        rev += str[i - 1]
+    for i in range(len(input),0,-1):
+        rev += input[i - 1]
 
     return rev
 
-def calcExpression(expression):
+
+def calc_expression(expression):
     i = 0
     while i < len(expression):
         if i == len(expression):
@@ -96,6 +100,8 @@ def calcExpression(expression):
             for j in range(i-1,-1,-1):
                 if expression[j].isdigit():
                     lOperand += expression[j]
+                elif expression[j] == '.':
+                    lOperand += expression[j]
                 else:
                     break
 
@@ -104,6 +110,8 @@ def calcExpression(expression):
             rOperand = ""
             for j in range(i+1, len(expression)):
                 if expression[j].isdigit():
+                    rOperand += expression[j]
+                elif expression[j] == '.':
                     rOperand += expression[j]
                 else:
                     break
@@ -124,12 +132,14 @@ def calcExpression(expression):
 def calculate(operand, left, right):
 
     return {
-        '^': math.pow(int(left),int(right)),
-        '*': int(left) * int(right),
-        '/': int(left)/int(right),
-        '+': int(left)+int(right),
-        '-': int(left)-int(right)
+        '^': math.pow(float(left),float(right)),
+        '*': float(left) * float(right),
+        '/': float(left)/float(right),
+        '+': float(left)+float(right),
+        '-': float(left)-float(right)
     }[operand]
 
 
-print(calcExpression("5*5+2-3"))
+
+#print(calcExpression("5/5+2-1"))
+print(inputParser("5*(4+3)"))
