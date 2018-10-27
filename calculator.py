@@ -1,100 +1,98 @@
-import math
-from pythonds.basic.stack import Stack
+from Tkinter import *
+import Tkinter as tk
 
+calculator = Tk()
+calculator.title("PyCalc")
+calculator.resizable(False,False)
 
-def toPost(infix):
-    # dictionary containing our math operation priorities according to PEMDAS
-    priority = {
-        "^": 4,
-        "#": 4,  # this will be my representation of a square root
-        "*": 3,
-        "/": 3,
-        "%": 3,
-        "+": 2,
-        "-": 2,
-        "(": 1  # this isn't according to PEMDAS because they are used more as delimiters than operators
-    }
-    opStack = Stack()
-    postList = []
-    expression = infix.split()
+class Pycalc(Frame):
+    def __init__(self, master, *args, **kwargs):
+        Frame.__init__(self, master, *args, **kwargs)
+        self.createButtons()
 
-    # check if our value is a number or parenthesis
-    for val in expression:
-        if val in "0123456789":
-            postList.append(val)
-        elif val == '(':
-            opStack.push(val)
-        elif val == ')':
-            topToken = opStack.pop()
+    def addToDisplay(self, text):
+        self.entryText = self.display.get()
+        self.textLength = len(self.entryText)
 
-            while topToken != '(':
-                postList.append(topToken)
-                topToken = opStack.pop()
+        if self.entryText == "0":
+            self.replaceText(text)
         else:
-            while (not opStack.isEmpty()) and (priority[opStack.peek()] >= priority[val]):
-                  postList.append(opStack.pop())
-            opStack.push(val)
+            self.display.insert(self.textLength, text)
 
-    while not opStack.isEmpty():
-        postList.append(opStack.pop())
-    return " ".join(postList)
+    def evalDisplay(self):
+        self.userFunction = self.display.get()
+        self.replaceText(eval(self.userFunction))
+
+    def clearDisplay(self):
+        self.replaceText("0")
+
+    def replaceText(self, text):
+        self.display.delete(0, END)
+        self.display.insert(0, text)
+
+    def createButtons(self):
+        self.display = Entry(self, font=("Helvetica", 16), relief=RAISED, justify=RIGHT)
+        self.display.insert(0, "0")
+        self.display.grid(row=0, column=0, columnspan=4)
+
+        self.clearButton = Button(self, font=("Helvetica", 12), text="C", borderwidth=1, command=lambda: self.clearDisplay())
+        self.clearButton.grid(row=1, column=0, sticky="NWNESWSE")
+
+        self.expButton = Button(self, font=("Helvetica", 12), text="^", borderwidth=1, command=lambda: self.addToDisplay("**"))
+        self.expButton.grid(row=1, column=1, sticky="NWNESWSE")
+
+        self.modButton = Button(self, font=("Helvetica", 12), text="%", borderwidth=1, command=lambda: self.addToDisplay("%"))
+        self.modButton.grid(row=1, column=2, sticky="NWNESWSE")
+
+        self.divideButton = Button(self, font=("Helvetica", 12), text="/", borderwidth=1, command=lambda: self.addToDisplay("/"))
+        self.divideButton.grid(row=1, column=3, sticky="NWNESWSE")
+
+        self.sevenButton = Button(self, font=("Helvetica", 12), text="7", borderwidth=1, command=lambda: self.addToDisplay("7"))
+        self.sevenButton.grid(row=2, column=0, sticky="NWNESWSE")
+
+        self.eightButton = Button(self, font=("Helvetica", 12), text="8", borderwidth=1, command=lambda: self.addToDisplay("8"))
+        self.eightButton.grid(row=2, column=1, sticky="NWNESWSE")
+
+        self.nineButton = Button(self, font=("Helvetica", 12), text="9", borderwidth=1, command=lambda: self.addToDisplay("9"))
+        self.nineButton.grid(row=2, column=2, sticky="NWNESWSE")
+
+        self.multButton = Button(self, font=("Helvetica", 12), text="*", borderwidth=1, command=lambda: self.addToDisplay("*"))
+        self.multButton.grid(row=2, column=3, sticky="NWNESWSE")
+        #
+        self.fourButton = Button(self, font=("Helvetica", 12), text="4", borderwidth=1, command=lambda: self.addToDisplay("4"))
+        self.fourButton.grid(row=3, column=0, sticky="NWNESWSE")
+
+        self.fiveButton = Button(self, font=("Helvetica", 12), text="5", borderwidth=1, command=lambda: self.addToDisplay("5"))
+        self.fiveButton.grid(row=3, column=1, sticky="NWNESWSE")
+
+        self.sixButton = Button(self, font=("Helvetica", 12), text="6", borderwidth=1, command=lambda: self.addToDisplay("6"))
+        self.sixButton.grid(row=3, column=2, sticky="NWNESWSE")
+
+        self.minButton = Button(self, font=("Helvetica", 12), text="-", borderwidth=1, command=lambda: self.addToDisplay("-"))
+        self.minButton.grid(row=3, column=3, sticky="NWNESWSE")
+
+        self.oneButton = Button(self, font=("Helvetica", 12), text="1", borderwidth=1, command=lambda: self.addToDisplay("1"))
+        self.oneButton.grid(row=4, column=0, sticky="NWNESWSE")
+
+        self.twoButton = Button(self, font=("Helvetica", 12), text="2", borderwidth=1, command=lambda: self.addToDisplay("2"))
+        self.twoButton.grid(row=4, column=1, sticky="NWNESWSE")
+
+        self.threeButton = Button(self, font=("Helvetica", 12), text="3", borderwidth=1, command=lambda: self.addToDisplay("3"))
+        self.threeButton.grid(row=4, column=2, sticky="NWNESWSE")
+
+        self.addButton = Button(self, font=("Helvetica", 12), text="+", borderwidth=1, command=lambda: self.addToDisplay("+"))
+        self.addButton.grid(row=4, column=3, sticky="NWNESWSE")
+
+        self.zeroButton = Button(self, font=("Helvetica", 12), text="0", borderwidth=1, command=lambda: self.addToDisplay("0"))
+        self.zeroButton.grid(row=5, column=0, sticky="NWNESWSE", columnspan=2)
+
+        self.decButton = Button(self, font=("Helvetica", 12), text=".", borderwidth=1, command=lambda: self.addToDisplay("."))
+        self.decButton.grid(row=5, column=2, sticky="NWNESWSE")
+
+        self.equalsButton = Button(self, font=("Helvetica", 12), text="=", borderwidth=1, command=lambda: self.evalDisplay())
+        self.equalsButton.grid(row=5, column=3, sticky="NWNESWSE")
 
 
-def calcExpression(rawInput):
+calc = Pycalc(calculator).grid()
 
-    i = count = 0
-    left = right = operand = ""
-    replaceStr = ""
-    newStr = ""
-    while i < len(expression) and len(expression) > 1:
-        replaceStr += expression[i]
-
-        if expression[i] == " ":
-            count += 1
-
-        if count == 0:
-            left += str(expression[i])
-        elif count == 1:
-            right = str(expression[i])
-
-
-
-        if isLegalOp(expression[i]):
-            operand = expression[i]
-            newStr = str(calculate(operand, left, right))
-            expression = expression.replace(replaceStr, newStr)
-            i = 0
-            count = 0
-            newStr = ""
-            replaceStr = ""
-
-        i += 1
-
-    return expression
-
-
-def calculate(operand, left, right):
-    left = int(left)
-    right = int(right)
-    return {
-        #'^': math.pow(left, right),
-        '*': left * right,
-        '/': left/right,
-        '+': left+right,
-        '-': left-right
-    }[operand]
-
-
-def isLegalOp(char):
-    legalChars = "#%^*/+-"
-
-    return char in legalChars
-
-
-testDivides = "5 / 5 + 2 - 1"
-postDivides = toPost(testDivides)
-print(calcExpression(postDivides))
-
-print(calcExpression("5 * 5"))
-#print(calcExpression("( 5 + 5 ) ^ 2"))
-print(calcExpression("5 * 9 + 3 / ( 8 + 4 )"))
+calculator.mainloop()
