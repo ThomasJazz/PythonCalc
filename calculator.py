@@ -41,10 +41,9 @@ def toPost(infix):
 
 
 def calcExpression(rawInput):
-    expression = toPost(rawInput)
 
     i = count = 0
-    left = right = operand = None
+    left = right = operand = ""
     replaceStr = ""
     newStr = ""
     while i < len(expression) and len(expression) > 1:
@@ -55,8 +54,10 @@ def calcExpression(rawInput):
 
         if count == 0:
             left += str(expression[i])
-        elif count == 2:
+        elif count == 1:
             right = str(expression[i])
+
+
 
         if isLegalOp(expression[i]):
             operand = expression[i]
@@ -64,6 +65,8 @@ def calcExpression(rawInput):
             expression = expression.replace(replaceStr, newStr)
             i = 0
             count = 0
+            newStr = ""
+            replaceStr = ""
 
         i += 1
 
@@ -71,18 +74,15 @@ def calcExpression(rawInput):
 
 
 def calculate(operand, left, right):
-    left = float(left)
-    right = float(right)
-    try:
-        return {
-            '^': math.pow(left, right),
-            '*': left * right,
-            '/': left/right,
-            '+': left+right,
-            '-': left-right
-        }[operand]
-    except ValueError, e:
-        print "error", e
+    left = int(left)
+    right = int(right)
+    return {
+        #'^': math.pow(left, right),
+        '*': left * right,
+        '/': left/right,
+        '+': left+right,
+        '-': left-right
+    }[operand]
 
 
 def isLegalOp(char):
@@ -91,7 +91,10 @@ def isLegalOp(char):
     return char in legalChars
 
 
-print(calcExpression("5 / 5 + 2 - 1"))
+testDivides = "5 / 5 + 2 - 1"
+postDivides = toPost(testDivides)
+print(calcExpression(postDivides))
+
 print(calcExpression("5 * 5"))
-print(calcExpression("( 5 + 5 ) ^ 2"))
+#print(calcExpression("( 5 + 5 ) ^ 2"))
 print(calcExpression("5 * 9 + 3 / ( 8 + 4 )"))
