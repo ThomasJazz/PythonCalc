@@ -79,7 +79,7 @@ class Pycalc(Frame):
 
 
     def createButtons(self):
-        self.prevAns = Entry(self, font=("Helvetica", 12), relief=RAISED, justify=RIGHT)
+        self.prevAns = Entry(self, font=("Helvetica", 12), relief=RAISED, justify=RIGHT, foreground='#848484')
         self.prevAns.insert(0,"")
         self.prevAns.grid(row=0, column=0, columnspan=5, sticky="nsew")
         self.display = Entry(self, font=("Helvetica", 24), relief=RAISED, justify=RIGHT)
