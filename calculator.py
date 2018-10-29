@@ -1,3 +1,4 @@
+from __future__ import division # without this, eval wont do integer division properly
 from Tkinter import *
 import math
 
