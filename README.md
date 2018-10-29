@@ -1,2 +1,2 @@
 # PythonCalc
-Basic GUI calculator written in Python
+Basic GUI scientific calculator written in Python

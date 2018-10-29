@@ -1,0 +1,37 @@
+Constraints:
+	- Account for parenthesis (Maybe recursive function to make
+	sure I account for nested parenthesis?)
+	- PEMDAS prioritization
+
+Features:
+	- Delete rightmost number entered.
+
+Buttons Needed:
+	- 
+Need to study:
+	- OOP with python
+	- Creating GUI with python
+
+Validate symbols:
+	0123456789^%/*-+.()
+
+Button rows needed:
+	sin, cos, tan, log, Pi
+	sqrt, Mod, x^2, x^3, Exp
+	1/x, CE, C, Del, /
+	e, 7, 8, 9, *
+	n!, 4, 5, 6, -
+	+-, 1, 2, 3, +
+	(, ), 0, ., =
+
+python math functions:
+	math.sin, math.cos, math.tan, math.log10(), math.sqrt(),
+
+
+Errors I need to handle:
+	- NameError (when user inputs letters that are not allowed)
+	- SyntaxError:
+		- Unexpected EOF while parsing (invalid parenthesis usage)
+
+Bug list:
+	
