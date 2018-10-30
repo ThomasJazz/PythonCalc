@@ -4,10 +4,9 @@ import math
 
 # github pls
 class Pycalc(Frame):
-    lastEntryLoc = 0
-    newNum = False
-    concatEntries = False
-    needDisplayUpdate = False
+    LAST_EXPRESSION_START = 0
+    newNum = True
+    UPDATE_DISPLAY = False
 
 
     def __init__(self, master, *args, **kwargs):
@@ -18,24 +17,41 @@ class Pycalc(Frame):
 
     def initialize(self):
         self.grid()
-        self.createButtons()
+        self.createWidgets()
 
 
     def addToDisplay(self, text):
         self.entryText = self.display.get()
         self.textLength = len(self.entryText)
 
-        if self.needDisplayUpdate and text in "**/-+" and not(self.entryText == "0"):
+
+        # if an operator is entered and the current display is the previous evaluation
+        if self.UPDATE_DISPLAY and text in "**/-+" and not(self.entryText == "0"):
             self.replacePrev(self.entryText)
-            self.needDisplayUpdate = False
+            self.UPDATE_DISPLAY = False
             self.replaceText("Ans" + text + "")
+
         elif self.entryText == "0" or self.isErrorMsg(self.entryText):
             self.replaceText(text)
+
         else:
-            if self.needDisplayUpdate:
+            if self.UPDATE_DISPLAY:
                 self.replacePrev("")
             self.display.insert(self.textLength, text)
-            self.needDisplayUpdate = False
+            self.UPDATE_DISPLAY = False
+
+
+
+        # this is how I track the last start of an expression
+        if self.newNum and text in '0123456789':
+            if self.textLength == 1:
+                self.LAST_EXPRESSION_START = self.textLength-1
+            else:
+                self.LAST_EXPRESSION_START = self.textLength
+
+            self.newNum = False
+        if not (text in '0123456789'):
+            self.newNum = True
 
 
     def evalDisplay(self):
@@ -43,7 +59,6 @@ class Pycalc(Frame):
         # replace Ans with our previous answer
         if 'Ans' in self.userFunction:
             self.userFunction = self.userFunction.replace('Ans', self.prevAns.get())
-
         # replace all our math functions with python math package calls for evaluation
         if 'sin(' in self.userFunction:
             self.userFunction = self.userFunction.replace('sin(', 'math.sin(')
@@ -62,10 +77,12 @@ class Pycalc(Frame):
         if 'e' in self.userFunction:
             self.userFunction = self.userFunction.replace('e', 'math.e')
 
+
         try:
-            if len(eval(self.userFunction)) > 0:
+            if not(eval(self.userFunction) == 0):
                 self.replaceText(eval(self.userFunction))
-                self.needDisplayUpdate = True
+                self.UPDATE_DISPLAY = True
+                self.replacePrev(self.display.get())
             else:
                 self.replaceText("0")
         except NameError:
@@ -122,12 +139,19 @@ class Pycalc(Frame):
             return False
 
 
-    # setting up all of our buttons
-    def createButtons(self):
+    def negToggle(self):
+        if not(self.display.get() == "0"):
+            self.display.insert(self.LAST_EXPRESSION_START, "-")
+
+
+    # setting up all of our widgets
+    def createWidgets(self):
+        # setting up Entry's
         self.prevAns = Entry(self, font=("Courier New", 14), relief=RAISED, justify=RIGHT, foreground='#e8e8e8',
                              borderwidth=0, background='#3d3d3d')
         self.prevAns.insert(0,"")
         self.prevAns.grid(row=0, column=0, columnspan=5, sticky="nsew")
+
         self.display = Entry(self, font=("Courier New", 24), relief=RAISED, justify=RIGHT, background='#3d3d3d',
                              foreground='#e8e8e8', borderwidth=0)
         self.display.insert(0, "0")
@@ -241,7 +265,6 @@ class Pycalc(Frame):
         self.minusButton.grid(row=6, column=4, sticky="nsew")
 
         # Sixth row of buttons
-        # NEG TOGGLE BUTTON STILL NEEDS IMPLEMENTATION
         self.negToggleButton = Button(self, font=("Courier New", 14), foreground='#e8e8e8', text="+-", borderwidth=1,
                                 background='#8c8c8c', activebackground='#a8a8a8', command=lambda: self.negToggle())
         self.negToggleButton.grid(row=7, column=0, sticky="nsew")
