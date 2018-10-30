@@ -9,9 +9,6 @@ import math
 
 class Pycalc(Frame):
     # global variables
-    LAST_EXPRESSION_START = 0
-    LAST_VAL = ""
-    newNum = True
     UPDATE_DISPLAY = False
 
     # set everything up
@@ -24,67 +21,57 @@ class Pycalc(Frame):
 
     # function adds the input to the Entry display
     def addToDisplay(self, text):
-        self.entryText = self.display.get()
-        self.textLength = len(self.entryText)
+        entryText = self.display.get()
+        textLength = len(entryText)
 
 
         # if an operator is entered and the current display is the previous evaluation
-        if self.UPDATE_DISPLAY and text in "**/-+" and not(self.entryText == "0"):
-            self.replacePrev(self.entryText)
+        if self.UPDATE_DISPLAY and self.isOperator(text) and not(entryText == "0"):
+            self.replacePrev(entryText)
             self.UPDATE_DISPLAY = False
             self.replaceText("Ans" + text + "")
 
         # if the current display is just a 0 or an error message, we want to replace instead of append
-        elif self.entryText == "0" or self.isErrorMsg(self.entryText):
+        elif entryText == "0" or self.isErrorMsg(entryText):
             self.replaceText(text)
 
         else:
             if self.UPDATE_DISPLAY:
                 self.replacePrev("")
-            self.display.insert(self.textLength, text)
+            self.display.insert(textLength, text)
             self.UPDATE_DISPLAY = False
 
 
-        # this is how I track the last start of an expression for the negToggle function
-        if self.newNum and text in '0123456789.':
-            if self.textLength == 1:
-                self.LAST_EXPRESSION_START = self.textLength-1
-            else:
-                self.LAST_EXPRESSION_START = self.textLength
-
-            self.newNum = False
-        if not (text in '0123456789.'):
-            self.newNum = True
-
-
     def evalDisplay(self):
-        self.userFunction = self.display.get()
+        userFunction = self.display.get()
         # replace Ans with our previous answer
-        if 'Ans' in self.userFunction:
-            self.userFunction = self.userFunction.replace('Ans', self.prevAns.get())
+        if 'Ans' in userFunction:
+            userFunction = userFunction.replace('Ans', self.prevAns.get())
         # replace all our math functions with python math package calls for evaluation
-        if 'sin(' in self.userFunction:
-            self.userFunction = self.userFunction.replace('sin(', 'math.sin(')
-        if 'cos(' in self.userFunction:
-            self.userFunction = self.userFunction.replace('cos(', 'math.cos(')
-        if 'tan(' in self.userFunction:
-            self.userFunction = self.userFunction.replace('tan(', 'math.tan(')
-        if 'log(' in self.userFunction:
-            self.userFunction = self.userFunction.replace('log(', 'math.log10(')
-        if 'sqrt(' in self.userFunction:
-            self.userFunction = self.userFunction.replace('sqrt(', 'math.sqrt(')
-        if 'pi' in self.userFunction:
-            self.userFunction = self.userFunction.replace('pi', 'math.pi')
-        if 'fact(' in self.userFunction:
-            self.userFunction = self.userFunction.replace('fact(', 'math.factorial(')
-        if 'e' in self.userFunction:
-            self.userFunction = self.userFunction.replace('e', 'math.e')
+        if 'sin(' in userFunction:
+            userFunction = userFunction.replace('sin(', 'math.sin(')
+        if 'cos(' in userFunction:
+            userFunction = userFunction.replace('cos(', 'math.cos(')
+        if 'tan(' in userFunction:
+            userFunction = userFunction.replace('tan(', 'math.tan(')
+        if 'log(' in userFunction:
+            userFunction = userFunction.replace('log(', 'math.log10(')
+        if 'sqrt(' in userFunction:
+            userFunction = userFunction.replace('sqrt(', 'math.sqrt(')
+        if 'pi' in userFunction:
+            userFunction = userFunction.replace('pi', 'math.pi')
+        if 'fact(' in userFunction:
+            userFunction = userFunction.replace('fact(', 'math.factorial(')
+        if 'e' in userFunction:
+            userFunction = userFunction.replace('e', 'math.e')
 
 
         # surround the evaluation in a try block so we make sure there are no errors passed through
         try:
-            if not(self.userFunction) == '0':
-                self.replaceText(eval(self.userFunction))
+            val = eval(userFunction)
+            if not(userFunction == '0') and not(isinstance(val, tuple)):
+
+                self.replaceText(eval(userFunction))
                 self.UPDATE_DISPLAY = True
                 self.replacePrev("")
             else:
@@ -94,7 +81,11 @@ class Pycalc(Frame):
         except (SyntaxError, AttributeError):
             self.replaceText("Syntax Error")
         except TypeError:
-            self.replaceText(eval(self.userFunction))
+            self.replaceText("Illegal Expression")
+        except ZeroDivisionError:
+            self.replaceText("Cannot Divide by 0")
+        except ValueError:
+            self.replaceText("No Solution")
 
     # clears/replaces current display with 0
     def clearDisplay(self):
@@ -118,15 +109,15 @@ class Pycalc(Frame):
 
     # delete only the last entered character
     def deleteLast(self):
-        self.entryLen = len(self.display.get())
+        entryLen = len(self.display.get())
 
         # If our display has an error message on it we want to get rid of the whole thing, not just the last character
         if self.isErrorMsg(self.display.get()):
             self.clearDisplay()
 
-        if self.entryLen >= 1:
-            self.display.delete(self.entryLen-1,END)
-            if self.entryLen == 1:
+        if entryLen >= 1:
+            self.display.delete(entryLen-1,END)
+            if entryLen == 1:
                 self.replaceText("0")
 
 
@@ -134,7 +125,10 @@ class Pycalc(Frame):
     def isErrorMsg(self, text):
         errorList = {
             "Syntax Error": True,
-            "Illegal Characters": True
+            "Illegal Characters": True,
+            "No Solution": True,
+            "Cannot Divide by 0": True,
+            "Illegal Expression": True
         }
         try:
             if errorList[text]:
@@ -144,11 +138,62 @@ class Pycalc(Frame):
         except KeyError:
             return False
 
+
+    # Check if the input is an operator
+    def isOperator(self, text):
+        operatorList = {
+            "*": True,
+            "**(": True,
+            "**2": True,
+            "**3": True,
+            "**": True,
+            "/": True,
+            "+": True,
+            "-": True
+        }
+        try:
+            if operatorList[text]:
+                return True
+            else:
+                return False
+        except KeyError:
+            return False
+
+
     # adds a minus sign to the front of the most recent expression
     def negToggle(self):
         if not(self.display.get() == "0"):
-            self.display.insert(self.LAST_EXPRESSION_START, "-")
+            length = len(self.display.get())
+            lastchar = ""
+            count = 0
+            closeParen = 0
+            for c in reversed(self.display.get()):
+                if c in ")":
+                    closeParen += 1
+                elif c in "(":
+                    closeParen -= 1
 
+                if self.isNumOrParen(c):
+                    count += 1
+                elif closeParen == 0:
+                    lastchar = c
+                    break
+                lastchar = c
+
+            if lastchar == "-": # if the last character we stumble upon is a minus, we flip it to a plus
+                self.display.delete(length-count-1)
+                self.display.insert(length-count-1,"+")
+            elif lastchar == "+": # opposite of above
+                self.display.delete(length-count-1)
+                self.display.insert(length-count-1,"-")
+            elif lastchar == "(": # indicates the beginning of an expression
+                self.display.insert(length-count-1, "-")
+            else:
+                self.display.insert(length-count, "-")
+
+
+    def isNumOrParen(self, text):
+        return text in '0123456789().'
 
     # setting up all of our widgets
     def createWidgets(self):
