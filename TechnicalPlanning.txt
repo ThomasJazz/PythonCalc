@@ -34,4 +34,4 @@ Errors I need to handle:
 		- Unexpected EOF while parsing (invalid parenthesis usage)
 
 Bug list:
-	
+	Type error still happens with 5(5)

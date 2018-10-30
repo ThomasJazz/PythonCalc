@@ -2,21 +2,17 @@ from __future__ import division  # without this, eval wont do integer division p
 from Tkinter import *
 import math
 
-# github pls
 class Pycalc(Frame):
+    # global variables
     LAST_EXPRESSION_START = 0
     LAST_VAL = ""
     newNum = True
     UPDATE_DISPLAY = False
 
-
+    # set everything up
     def __init__(self, master, *args, **kwargs):
         Frame.__init__(self, master, *args, **kwargs)
         self.parent = master
-        self.initialize()
-
-
-    def initialize(self):
         self.grid()
         self.createWidgets()
 
@@ -26,13 +22,13 @@ class Pycalc(Frame):
         self.textLength = len(self.entryText)
 
 
-
         # if an operator is entered and the current display is the previous evaluation
         if self.UPDATE_DISPLAY and text in "**/-+" and not(self.entryText == "0"):
             self.replacePrev(self.entryText)
             self.UPDATE_DISPLAY = False
             self.replaceText("Ans" + text + "")
 
+        # if the current display is just a 0 or an error message, we want to replace instead of append
         elif self.entryText == "0" or self.isErrorMsg(self.entryText):
             self.replaceText(text)
 
@@ -43,7 +39,7 @@ class Pycalc(Frame):
             self.UPDATE_DISPLAY = False
 
 
-        # this is how I track the last start of an expression
+        # this is how I track the last start of an expression for the negToggle function
         if self.newNum and text in '0123456789.':
             if self.textLength == 1:
                 self.LAST_EXPRESSION_START = self.textLength-1
@@ -79,6 +75,7 @@ class Pycalc(Frame):
             self.userFunction = self.userFunction.replace('e', 'math.e')
 
 
+        # surround the evaluation in a try block so we make sure there are no errors passed through
         try:
             if not(self.userFunction) == '0':
                 self.replaceText(eval(self.userFunction))
@@ -150,11 +147,11 @@ class Pycalc(Frame):
     def createWidgets(self):
         # setting up Entry's
         self.prevAns = Entry(self, font=("Courier New", 14), relief=RAISED, justify=RIGHT, foreground='#e8e8e8',
-                             borderwidth=0, background='#3d3d3d')
+                             borderwidth=0, background='#3E4E59')
         self.prevAns.insert(0,"")
         self.prevAns.grid(row=0, column=0, columnspan=5, sticky="nsew")
 
-        self.display = Entry(self, font=("Courier New", 24), relief=RAISED, justify=RIGHT, background='#3d3d3d',
+        self.display = Entry(self, font=("Courier New", 24), relief=RAISED, justify=RIGHT, background='#3E4E59',
                              foreground='#e8e8e8', borderwidth=0)
         self.display.insert(0, "0")
         self.display.grid(row=1, column=0, columnspan=5, sticky="nsew")
@@ -198,7 +195,7 @@ class Pycalc(Frame):
         self.logButton.grid(row=3, column=3, sticky="nsew")
 
         self.piButton = Button(self, font=("Courier New", 14), foreground='#e8e8e8', text="^", borderwidth=1,
-                               background='#05841e', activebackground='#a8a8a8', command=lambda: self.addToDisplay("**("))
+                               background='#F25652', activebackground='#a8a8a8', command=lambda: self.addToDisplay("**("))
         self.piButton.grid(row=3, column=4, sticky="nsew")
 
         # Third row of buttons
@@ -219,7 +216,7 @@ class Pycalc(Frame):
         self.delButton.grid(row=4, column=3, sticky="nsew")
 
         self.divButton = Button(self, font=("Courier New", 14), foreground='#e8e8e8', text="/", borderwidth=1,
-                               background='#05841e', activebackground='#a8a8a8', command=lambda: self.addToDisplay("/"))
+                               background='#F25652', activebackground='#a8a8a8', command=lambda: self.addToDisplay("/"))
         self.divButton.grid(row=4, column=4, sticky="nsew")
 
 
@@ -229,20 +226,20 @@ class Pycalc(Frame):
                                 background='#8c8c8c', activebackground='#a8a8a8', command=lambda: self.addToDisplay("e"))
         self.eButton.grid(row=5, column=0, sticky="nsew")
 
-        self.sevenButton = Button(self, font=("Courier New", 14), foreground='#e8e8e8', text="7", borderwidth=1,
+        self.sevenButton = Button(self, font=("Courier New", 14), foreground='#474747', text="7", borderwidth=1,
                                 background='#aaaaaa', activebackground='#a8a8a8', command=lambda: self.addToDisplay("7"))
         self.sevenButton.grid(row=5, column=1, sticky="nsew")
 
-        self.eightButton = Button(self, font=("Courier New", 14), foreground='#e8e8e8', text="8", borderwidth=1,
+        self.eightButton = Button(self, font=("Courier New", 14), foreground='#474747', text="8", borderwidth=1,
                                 background='#aaaaaa', activebackground='#a8a8a8', command=lambda: self.addToDisplay("8"))
         self.eightButton.grid(row=5, column=2, sticky="nsew")
 
-        self.nineButton = Button(self, font=("Courier New", 14), foreground='#e8e8e8', text="9", borderwidth=1,
+        self.nineButton = Button(self, font=("Courier New", 14), foreground='#474747', text="9", borderwidth=1,
                                 background='#aaaaaa', activebackground='#a8a8a8', command=lambda: self.addToDisplay("9"))
         self.nineButton.grid(row=5, column=3, sticky="nsew")
 
         self.multButton = Button(self, font=("Courier New", 14), foreground='#e8e8e8', text="*", borderwidth=1,
-                               background='#05841e', activebackground='#a8a8a8', command=lambda: self.addToDisplay("*"))
+                               background='#F25652', activebackground='#a8a8a8', command=lambda: self.addToDisplay("*"))
         self.multButton.grid(row=5, column=4, sticky="nsew")
 
         # Fifth row of buttons
@@ -250,20 +247,20 @@ class Pycalc(Frame):
                                 background='#8c8c8c', activebackground='#a8a8a8', command=lambda: self.addToDisplay("fact("))
         self.factButton.grid(row=6, column=0, sticky="nsew")
 
-        self.fourButton = Button(self, font=("Courier New", 14), foreground='#e8e8e8', text="4", borderwidth=1,
+        self.fourButton = Button(self, font=("Courier New", 14), foreground='#474747', text="4", borderwidth=1,
                                 background='#aaaaaa', activebackground='#a8a8a8', command=lambda: self.addToDisplay("4"))
         self.fourButton.grid(row=6, column=1, sticky="nsew")
 
-        self.fiveButton = Button(self, font=("Courier New", 14), foreground='#e8e8e8', text="5", borderwidth=1,
+        self.fiveButton = Button(self, font=("Courier New", 14), foreground='#474747', text="5", borderwidth=1,
                                 background='#aaaaaa', activebackground='#a8a8a8', command=lambda: self.addToDisplay("5"))
         self.fiveButton.grid(row=6, column=2, sticky="nsew")
 
-        self.sixButton = Button(self, font=("Courier New", 14), foreground='#e8e8e8', text="6", borderwidth=1,
+        self.sixButton = Button(self, font=("Courier New", 14), foreground='#474747', text="6", borderwidth=1,
                                 background='#aaaaaa', activebackground='#a8a8a8', command=lambda: self.addToDisplay("6"))
         self.sixButton.grid(row=6, column=3, sticky="nsew")
 
         self.minusButton = Button(self, font=("Courier New", 14), foreground='#e8e8e8', text="-", borderwidth=1,
-                               background='#05841e', activebackground='#a8a8a8', command=lambda: self.addToDisplay("-"))
+                               background='#F25652', activebackground='#a8a8a8', command=lambda: self.addToDisplay("-"))
         self.minusButton.grid(row=6, column=4, sticky="nsew")
 
         # Sixth row of buttons
@@ -271,20 +268,20 @@ class Pycalc(Frame):
                                 background='#8c8c8c', activebackground='#a8a8a8', command=lambda: self.negToggle())
         self.negToggleButton.grid(row=7, column=0, sticky="nsew")
 
-        self.oneButton = Button(self, font=("Courier New", 14), foreground='#e8e8e8', text="1", borderwidth=1,
+        self.oneButton = Button(self, font=("Courier New", 14), foreground='#474747', text="1", borderwidth=1,
                                 background='#aaaaaa', activebackground='#a8a8a8', command=lambda: self.addToDisplay("1"))
         self.oneButton.grid(row=7, column=1, sticky="nsew")
 
-        self.twoButton = Button(self, font=("Courier New", 14), foreground='#e8e8e8', text="2", borderwidth=1,
+        self.twoButton = Button(self, font=("Courier New", 14), foreground='#474747', text="2", borderwidth=1,
                                 background='#aaaaaa', activebackground='#a8a8a8', command=lambda: self.addToDisplay("2"))
         self.twoButton.grid(row=7, column=2, sticky="nsew")
 
-        self.threeButton = Button(self, font=("Courier New", 14), foreground='#e8e8e8', text="3", borderwidth=1,
+        self.threeButton = Button(self, font=("Courier New", 14), foreground='#474747', text="3", borderwidth=1,
                                 background='#aaaaaa', activebackground='#a8a8a8', command=lambda: self.addToDisplay("3"))
         self.threeButton.grid(row=7, column=3, sticky="nsew")
 
         self.plusButton = Button(self, font=("Courier New", 14), foreground='#e8e8e8', text="+", borderwidth=1,
-                               background='#05841e', activebackground='#a8a8a8', command=lambda: self.addToDisplay("+"))
+                               background='#F25652', activebackground='#a8a8a8', command=lambda: self.addToDisplay("+"))
         self.plusButton.grid(row=7, column=4, sticky="nsew")
 
         # Seventh row of buttons
@@ -296,22 +293,22 @@ class Pycalc(Frame):
                                 background='#8c8c8c', activebackground='#a8a8a8', command=lambda: self.addToDisplay(")"))
         self.rightParenButton.grid(row=8, column=1, sticky="nsew")
 
-        self.zeroButton = Button(self, font=("Courier New", 14), foreground='#e8e8e8', text="0", borderwidth=1,
+        self.zeroButton = Button(self, font=("Courier New", 14), foreground='#474747', text="0", borderwidth=1,
                                 background='#aaaaaa', activebackground='#a8a8a8', command=lambda: self.addToDisplay("0"))
         self.zeroButton.grid(row=8, column=2, sticky="nsew")
 
-        self.decimalButton = Button(self, font=("Courier New", 14), foreground='#e8e8e8', text=".", borderwidth=1,
+        self.decimalButton = Button(self, font=("Courier New", 14), foreground='#474747', text=".", borderwidth=1,
                                 background='#aaaaaa', activebackground='#a8a8a8', command=lambda: self.addToDisplay("."))
         self.decimalButton.grid(row=8, column=3, sticky="nsew")
 
         self.equalsButton = Button(self, font=("Courier New", 14), foreground='#e8e8e8', text="=", borderwidth=1,
-                               background='#05841e', activebackground='#a8a8a8', command=lambda: self.evalDisplay())
+                               background='#F25652', activebackground='#a8a8a8', command=lambda: self.evalDisplay())
         self.equalsButton.grid(row=8, column=4, sticky="nsew")
 
 
 Calculator = Tk()
 Calculator.title("PyCalc")
 Calculator.resizable(False,False)
-Calculator.iconbitmap('pycalcicon_tEC_icon.ico')
+Calculator.iconbitmap('pycalcicon_rjk_icon.ico')
 root = Pycalc(Calculator).grid()
 Calculator.mainloop()
