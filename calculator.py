@@ -17,6 +17,7 @@ class Pycalc(Frame):
         self.createWidgets()
 
 
+    # function adds the input to the Entry display
     def addToDisplay(self, text):
         self.entryText = self.display.get()
         self.textLength = len(self.entryText)
@@ -137,7 +138,7 @@ class Pycalc(Frame):
         except KeyError:
             return False
 
-
+    # adds a minus sign to the front of the most recent expression
     def negToggle(self):
         if not(self.display.get() == "0"):
             self.display.insert(self.LAST_EXPRESSION_START, "-")
@@ -218,8 +219,6 @@ class Pycalc(Frame):
         self.divButton = Button(self, font=("Courier New", 14), foreground='#e8e8e8', text="/", borderwidth=1,
                                background='#F25652', activebackground='#a8a8a8', command=lambda: self.addToDisplay("/"))
         self.divButton.grid(row=4, column=4, sticky="nsew")
-
-
 
         # Fourth row of buttons
         self.eButton = Button(self, font=("Courier New", 14), foreground='#e8e8e8', text="e", borderwidth=1,
@@ -306,6 +305,7 @@ class Pycalc(Frame):
         self.equalsButton.grid(row=8, column=4, sticky="nsew")
 
 
+# initial window setup stuff
 Calculator = Tk()
 Calculator.title("PyCalc")
 Calculator.resizable(False,False)
