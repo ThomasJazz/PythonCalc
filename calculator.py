@@ -5,6 +5,7 @@ import math
 # github pls
 class Pycalc(Frame):
     LAST_EXPRESSION_START = 0
+    LAST_VAL = ""
     newNum = True
     UPDATE_DISPLAY = False
 
@@ -25,6 +26,7 @@ class Pycalc(Frame):
         self.textLength = len(self.entryText)
 
 
+
         # if an operator is entered and the current display is the previous evaluation
         if self.UPDATE_DISPLAY and text in "**/-+" and not(self.entryText == "0"):
             self.replacePrev(self.entryText)
@@ -41,16 +43,15 @@ class Pycalc(Frame):
             self.UPDATE_DISPLAY = False
 
 
-
         # this is how I track the last start of an expression
-        if self.newNum and text in '0123456789':
+        if self.newNum and text in '0123456789.':
             if self.textLength == 1:
                 self.LAST_EXPRESSION_START = self.textLength-1
             else:
                 self.LAST_EXPRESSION_START = self.textLength
 
             self.newNum = False
-        if not (text in '0123456789'):
+        if not (text in '0123456789.'):
             self.newNum = True
 
 
@@ -79,15 +80,15 @@ class Pycalc(Frame):
 
 
         try:
-            if not(eval(self.userFunction) == 0):
+            if not(self.userFunction) == '0':
                 self.replaceText(eval(self.userFunction))
                 self.UPDATE_DISPLAY = True
-                self.replacePrev(self.display.get())
+                self.replacePrev("")
             else:
                 self.replaceText("0")
         except NameError:
             self.replaceText("Illegal Characters")
-        except SyntaxError:
+        except (SyntaxError, AttributeError):
             self.replaceText("Syntax Error")
         except TypeError:
             self.replaceText(eval(self.userFunction))
@@ -123,6 +124,7 @@ class Pycalc(Frame):
             self.display.delete(self.entryLen-1,END)
             if self.entryLen == 1:
                 self.replaceText("0")
+
 
     # Don't want to perform math on our error messages
     def isErrorMsg(self, text):
