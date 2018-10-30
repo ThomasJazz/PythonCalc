@@ -1,5 +1,10 @@
 from __future__ import division  # without this, eval wont do integer division properly
-from Tkinter import *
+try:
+    # for Python2
+    from Tkinter import *
+except ImportError:
+    # for Python3
+    from tkinter import *
 import math
 
 class Pycalc(Frame):
@@ -94,6 +99,7 @@ class Pycalc(Frame):
     # clears/replaces current display with 0
     def clearDisplay(self):
         self.replaceText("0")
+        self.UPDATE_DISPLAY = False
 
     # replace the display with a new string
     def replaceText(self, text):
@@ -309,6 +315,6 @@ class Pycalc(Frame):
 Calculator = Tk()
 Calculator.title("PyCalc")
 Calculator.resizable(False,False)
-Calculator.iconbitmap('pycalcicon_rjk_icon.ico')
+#Calculator.iconbitmap('pycalcicon_rjk_icon.ico')
 root = Pycalc(Calculator).grid()
 Calculator.mainloop()
