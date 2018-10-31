@@ -1,4 +1,5 @@
 from __future__ import division  # without this, eval wont do integer division properly
+import subprocess
 try:
     # for Python2
     from Tkinter import *
@@ -25,11 +26,15 @@ class Pycalc(Frame):
         textLength = len(entryText)
 
 
-        # if an operator is entered and the current display is the previous evaluation
-        if self.UPDATE_DISPLAY and self.isOperator(text) and not(entryText == "0"):
-            self.replacePrev(entryText)
-            self.UPDATE_DISPLAY = False
-            self.replaceText("Ans" + text + "")
+        # if we recieve an entry when the current value is from the last evaluation
+        if self.UPDATE_DISPLAY:
+            if self.isOperator(text) and not(entryText == "0"):
+                self.replacePrev(entryText)
+                self.UPDATE_DISPLAY = False
+                self.replaceText("Ans" + text + "")
+            elif self.isNumOrParen(text):
+                self.UPDATE_DISPLAY = False
+                self.replaceText(text)
 
         # if the current display is just a 0 or an error message, we want to replace instead of append
         elif entryText == "0" or self.isErrorMsg(entryText):
@@ -162,7 +167,9 @@ class Pycalc(Frame):
 
     # adds a minus sign to the front of the most recent expression
     def negToggle(self):
-        if not(self.display.get() == "0"):
+        if self.UPDATE_DISPLAY:
+            self.addToDisplay("-")
+        elif not(self.display.get() == "0"):
             length = len(self.display.get())
             lastchar = ""
             count = 0
@@ -190,6 +197,7 @@ class Pycalc(Frame):
                 self.display.insert(length-count-1, "-")
             else:
                 self.display.insert(length-count, "-")
+
 
 
     def isNumOrParen(self, text):
