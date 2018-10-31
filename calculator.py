@@ -49,10 +49,9 @@ class Pycalc(Frame):
 
     def evalDisplay(self):
         userFunction = self.display.get()
-        # replace Ans with our previous answer
         if 'Ans' in userFunction:
             userFunction = userFunction.replace('Ans', self.prevAns.get())
-        # replace all our math functions with python math package calls for evaluation
+            # replace all our math functions with python math package calls for evaluation
         if 'sin(' in userFunction:
             userFunction = userFunction.replace('sin(', 'math.sin(')
         if 'cos(' in userFunction:
@@ -70,27 +69,15 @@ class Pycalc(Frame):
         if 'e' in userFunction:
             userFunction = userFunction.replace('e', 'math.e')
 
-
-        # surround the evaluation in a try block so we make sure there are no errors passed through
+        # My solution to the program timing out we find impossible expressions like  factorial(100000000)
         try:
-            val = eval(userFunction)
-            if not(userFunction == '0') and not(isinstance(val, tuple)):
+            answer = subprocess.check_output("python3 evalexpression.py '%s'" % userFunction, shell=True, timeout=3)
+            answer = answer.decode('ascii')  # strip out commas and b's and stuff
+            self.replaceText(answer[:len(answer)-1])  # remove \n from the end of the string
+            self.UPDATE_DISPLAY = True
+        except subprocess.TimeoutExpired:
+            self.replaceText("Operation Timed Out")
 
-                self.replaceText(eval(userFunction))
-                self.UPDATE_DISPLAY = True
-                self.replacePrev("")
-            else:
-                self.replaceText("0")
-        except NameError:
-            self.replaceText("Illegal Characters")
-        except (SyntaxError, AttributeError):
-            self.replaceText("Syntax Error")
-        except TypeError:
-            self.replaceText("Illegal Expression")
-        except ZeroDivisionError:
-            self.replaceText("Cannot Divide by 0")
-        except ValueError:
-            self.replaceText("No Solution")
 
     # clears/replaces current display with 0
     def clearDisplay(self):
@@ -133,7 +120,8 @@ class Pycalc(Frame):
             "Illegal Characters": True,
             "No Solution": True,
             "Cannot Divide by 0": True,
-            "Illegal Expression": True
+            "Illegal Expression": True,
+            "Operation Timed Out": True
         }
         try:
             if errorList[text]:
